@@ -20,8 +20,11 @@ RUN make install
 RUN ldconfig
 
 ## Install Soapyremote
+# CUSTOM LIBRARY
 WORKDIR /tmp
-RUN git clone https://github.com/pothosware/SoapyRemote.git
+RUN git clone https://github.com/acien101/SoapyRemote.git
+WORKDIR /tmp/SoapyRemote
+RUN git checkout ESASoapy
 RUN mkdir /tmp/SoapyRemote/build
 WORKDIR /tmp/SoapyRemote/build
 RUN cmake ..
@@ -32,28 +35,35 @@ RUN ldconfig
 
 ## Install airspy hf driver
 # <https://github.com/airspy/airspyhf>
-WORKDIR /tmp
-RUN wget https://github.com/airspy/airspyhf/archive/1.6.8.tar.gz
-RUN tar -xf 1.6.8.tar.gz
-WORKDIR airspyhf-1.6.8
-RUN mkdir build
-WORKDIR build
-RUN cmake ../ -DINSTALL_UDEV_RULES=ON
-RUN make
-RUN make install
-RUN ldconfig
-RUN rm -rf *
+#WORKDIR /tmp
+#RUN wget https://github.com/airspy/airspyhf/archive/1.6.8.tar.gz
+#RUN tar -xf 1.6.8.tar.gz
+#WORKDIR airspyhf-1.6.8
+#RUN mkdir build
+#WORKDIR build
+#RUN cmake ../ -DINSTALL_UDEV_RULES=ON
+#RUN make
+#RUN make install
+#RUN ldconfig
+#RUN rm -rf *
+#
+### Soapy SDR plugin for AirspyHF+
+## <https://github.com/pothosware/SoapyAirspyHF/wiki>
+#WORKDIR /tmp
+#RUN git clone https://github.com/pothosware/SoapyAirspyHF.git
+#WORKDIR SoapyAirspyHF
+#RUN mkdir build
+#WORKDIR build
+#RUN cmake ..
+#RUN make
+#RUN make install
 
-## Soapy SDR plugin for AirspyHF+
-# <https://github.com/pothosware/SoapyAirspyHF/wiki>
-WORKDIR /tmp
-RUN git clone https://github.com/pothosware/SoapyAirspyHF.git
-WORKDIR SoapyAirspyHF
-RUN mkdir build
-WORKDIR build
-RUN cmake ..
-RUN make
-RUN make install
+# Installing LimeSDR Support
+RUN add-apt-repository -y ppa:myriadrf/drivers
+RUN apt-get update
+RUN apt-get install limesuite liblimesuite-dev limesuite-udev limesuite-images
+RUN apt-get install soapysdr-tools soapysdr-module-lms7
+RUN apt-get install soapysdr soapysdr-module-lms7
 
 COPY ./soapysdr-helper.sh /usr/local/bin
 RUN chmod 744 /usr/local/bin/soapysdr-helper.sh
